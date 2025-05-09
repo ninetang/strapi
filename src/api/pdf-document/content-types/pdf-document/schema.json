@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pdf_documents",
+  "info": {
+    "singularName": "pdf-document",
+    "pluralName": "pdf-documents",
+    "displayName": "PDF Document",
+    "description": "存储 PDF 文件及其解析的信息"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "documentFile": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["files"]
+    },
+    "documentNumber": {
+      "type": "string",
+      "required": false
+    },
+    "applicant": {
+      "type": "string",
+      "required": false
+    },
+    "applicantAddress": {
+      "type": "text",
+      "required": false
+    },
+    "product": {
+      "type": "string",
+      "required": false
+    },
+    "documentDate": {
+      "type": "date",
+      "required": false
+    },
+    "rawContent": {
+      "type": "text",
+      "required": false,
+      "private": true
+    }
+  }
+} 
