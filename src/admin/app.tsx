@@ -2,13 +2,48 @@ import type { StrapiApp } from '@strapi/strapi/admin';
 
 export default {
   config: {
+    // 设置页面标题
+    head: {
+      title: 'JooTang Admin',
+    },
     // 设置默认语言
     translations: {
       en: {
-        "app.components.LeftMenu.navbrand.title": "Strapi Dashboard",
+        "app.components.LeftMenu.navbrand.title": "JooTangCMS Dashboard",
+        "Auth.form.welcome.title": "Welcome to JooTangCMS",
+        "Auth.form.welcome.subtitle": "Log in to your account",
+        "Auth.form.email.placeholder": "Ask Tiger",
+        "app.components.HomePage.welcome": "Welcome to JooTangCMS",
+        "app.components.HomePage.welcome.again": "Welcome back to JooTangCMS",
+        "app.components.HomePage.button.blog": "Learn more on our blog",
+        "app.components.HomePage.community": "Join our community",
+        "notification.version.update.message": "A new version of JooTangCMS is available!",
+        "Settings.application.strapiVersion": "JooTangCMS VERSION",
+        "Settings.application.strapiVersion.description": "JooTangCMS version",
+        "Settings.application.strapiVersion.link": "View JooTangCMS on GitHub",
+        "Settings.application.strapiVersion.release-notes": "Release notes",
+        "Settings.application.strapiVersion.upgrade": "Upgrade JooTangCMS",
+        "Settings.application.strapiVersion.upgrade.description": "Upgrade to the latest version of JooTangCMS",
+        "Settings.application.strapiVersion.upgrade.button": "Upgrade now",
+        "Settings.application.strapiVersion.upgrade.success": "JooTangCMS upgraded successfully",
+        "Settings.application.strapiVersion.upgrade.error": "Failed to upgrade JooTangCMS",
+        "Settings.application.strapiVersion.upgrade.checking": "Checking for updates...",
+        "Settings.application.strapiVersion.upgrade.available": "Update available",
+        "Settings.application.strapiVersion.upgrade.latest": "You are using the latest version",
+        "Settings.application.strapiVersion.upgrade.beta": "Beta version",
+        "Settings.application.strapiVersion.upgrade.alpha": "Alpha version",
+        "Settings.application.strapiVersion.upgrade.rc": "Release candidate",
+        "Settings.application.strapiVersion.upgrade.stable": "Stable version",
+        "Settings.application.strapiVersion.upgrade.deprecated": "Deprecated version",
+        "Settings.application.strapiVersion.upgrade.security": "Security update available",
+        "Settings.application.strapiVersion.upgrade.feature": "Feature update available",
+        "Settings.application.strapiVersion.upgrade.bugfix": "Bug fix update available",
+        "Settings.application.strapiVersion.upgrade.major": "Major version update available",
+        "Settings.application.strapiVersion.upgrade.minor": "Minor version update available",
+        "Settings.application.strapiVersion.upgrade.patch": "Patch update available"
       },
       'zh-Hans': {
-        "app.components.LeftMenu.navbrand.title": "Strapi 仪表盘",
+        "app.components.LeftMenu.navbrand.title": "JooTangCMS 仪表盘",
         "global.content-manager": "内容管理",
         "global.plugins.content-manager": "内容管理",
         "global.plugins.content-type-builder": "内容类型构建器",
@@ -41,7 +76,7 @@ export default {
         "content-manager.pages.ListView.table-headers.actions.transferTokens": "传输令牌",
         "content-manager.pages.ListView.table-headers.actions.application": "应用程序设置",
         "cloud.plugin.name": "部署",
-        "cloud.plugin.description": "部署您的 Strapi 应用",
+        "cloud.plugin.description": "部署您的 JooTangCMS 应用",
         "marketplace.plugin.name": "市场",
         "marketplace.plugin.description": "浏览和安装插件",
         "upload.plugin.name": "媒体库",
@@ -58,6 +93,22 @@ export default {
         "User": "用户",
         "About": "关于",
         "Global": "全局设置",
+        // 登录页面翻译
+        "Auth.form.welcome.title": "欢迎使用 JooTang 管理系统",
+        "Auth.form.welcome.subtitle": "请登录您的账户",
+        "Auth.form.email.label": "邮箱",
+        "Auth.form.password.label": "密码",
+        "Auth.form.button.login": "登录",
+        "Auth.form.button.login.strapi": "登录 JooTangCMS",
+        "Auth.form.forgot-password": "忘记密码？",
+        "Auth.form.register": "还没有账户？",
+        "Auth.form.register.link": "注册",
+        "Auth.form.error": "登录失败，请检查您的邮箱和密码",
+        "Auth.form.error.invalid": "邮箱或密码错误",
+        "Auth.form.error.blocked": "账户已被锁定",
+        "Auth.form.error.inactive": "账户未激活",
+        "Auth.form.error.expired": "密码已过期",
+        "Auth.form.error.rate-limit": "登录尝试次数过多，请稍后再试",
         "Settings.profile.form.section.experience.title": "体验",
         "Settings.profile.form.section.personal.title": "个人信息",
         "Settings.permissions": "管理员权限",
@@ -66,11 +117,35 @@ export default {
         "Settings.apiTokens": "API 令牌",
         "Settings.transferTokens": "传输令牌",
         "Settings.application": "应用程序设置",
-        "app.components.HomePage.welcome": "欢迎使用",
-        "app.components.HomePage.welcome.again": "欢迎回来",
+        "app.components.HomePage.welcome": "欢迎使用 JooTangCMS",
+        "app.components.HomePage.welcome.again": "欢迎回到 JooTangCMS",
         "app.components.HomePage.button.blog": "在博客上了解更多",
         "app.components.HomePage.community": "加入社区",
-        "notification.version.update.message": "有新版本的 Strapi 可用！"
+        "notification.version.update.message": "有新版本的 JooTangCMS 可用！",
+        "Auth.form.email.placeholder": "管理员分配账号",
+        "Settings.application.strapiVersion": "JooTangCMS 版本",
+        "Settings.application.strapiVersion.description": "JooTangCMS 版本信息",
+        "Settings.application.strapiVersion.link": "在 GitHub 上查看 JooTangCMS",
+        "Settings.application.strapiVersion.release-notes": "发布说明",
+        "Settings.application.strapiVersion.upgrade": "升级 JooTangCMS",
+        "Settings.application.strapiVersion.upgrade.description": "升级到最新版本的 JooTangCMS",
+        "Settings.application.strapiVersion.upgrade.button": "立即升级",
+        "Settings.application.strapiVersion.upgrade.success": "JooTangCMS 升级成功",
+        "Settings.application.strapiVersion.upgrade.error": "JooTangCMS 升级失败",
+        "Settings.application.strapiVersion.upgrade.checking": "检查更新中...",
+        "Settings.application.strapiVersion.upgrade.available": "有可用更新",
+        "Settings.application.strapiVersion.upgrade.latest": "您正在使用最新版本",
+        "Settings.application.strapiVersion.upgrade.beta": "测试版本",
+        "Settings.application.strapiVersion.upgrade.alpha": "预览版本",
+        "Settings.application.strapiVersion.upgrade.rc": "候选版本",
+        "Settings.application.strapiVersion.upgrade.stable": "稳定版本",
+        "Settings.application.strapiVersion.upgrade.deprecated": "已弃用版本",
+        "Settings.application.strapiVersion.upgrade.security": "有安全更新可用",
+        "Settings.application.strapiVersion.upgrade.feature": "有功能更新可用",
+        "Settings.application.strapiVersion.upgrade.bugfix": "有错误修复更新可用",
+        "Settings.application.strapiVersion.upgrade.major": "有主要版本更新可用",
+        "Settings.application.strapiVersion.upgrade.minor": "有次要版本更新可用",
+        "Settings.application.strapiVersion.upgrade.patch": "有补丁更新可用"
       },
     },
     // 设置可用的语言
@@ -83,5 +158,8 @@ export default {
     if (localStorage.getItem('strapi-admin-language') === null) {
       localStorage.setItem('strapi-admin-language', 'zh-Hans');
     }
+    
+    // 动态设置页面标题
+    document.title = 'JooTang Admin';
   },
 }; 
