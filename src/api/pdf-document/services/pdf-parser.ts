@@ -46,7 +46,7 @@ export default () => ({
       };
       
       // 定义提取规则
-      const documentNumber = extractField(/No\.\s*(.*?)(?:\n|$)/i, content);
+      const documentNumber = extractField(/No\.:?\s*(.*?)(?:\n|$)/i, content);
       const applicant = extractField(/Applicant:\s*(.*?)(?:\n|$)/i, content);
       const applicantAddress = extractField(/Address:\s*(.*?)(?:\n|$)/i, content);
       const product = extractField(/Product:\s*(.*?)(?:\n|$)/i, content);
