@@ -7,19 +7,19 @@ interface FileData {
   hash: string;
 }
 
-console.log('PDF Parser service file loaded!');
+// console.log('PDF Parser service file loaded!');
 
 export default () => ({
   async parsePDF(fileData: FileData) {
-    console.log('=== PDF Parser Started ===');
-    console.log('File Data:', JSON.stringify(fileData, null, 2));
+    // console.log('=== PDF Parser Started ===');
+    // console.log('File Data:', JSON.stringify(fileData, null, 2));
     
     try {
       const { url, hash } = fileData;
       
       // 获取文件的物理路径
       const filePath = path.join(process.cwd(), 'public', url);
-      console.log('Attempting to read file from:', filePath);
+      // console.log('Attempting to read file from:', filePath);
       
       // 检查文件是否存在
       if (!fs.existsSync(filePath)) {
@@ -29,10 +29,10 @@ export default () => ({
       
       // 读取 PDF 文件
       const dataBuffer = fs.readFileSync(filePath);
-      console.log('File read successfully, size:', dataBuffer.length, 'bytes');
+      // console.log('File read successfully, size:', dataBuffer.length, 'bytes');
       
       const pdfData = await pdfParse(dataBuffer);
-      console.log('PDF parsed successfully, text length:', pdfData.text.length);
+      // console.log('PDF parsed successfully, text length:', pdfData.text.length);
       
       // 提取文本内容
       const content = pdfData.text;
@@ -45,13 +45,41 @@ export default () => ({
         return match ? match[1].trim() : null;
       };
       
+      // 解析 Model Number 字段，返回字符串数组
+      const extractModelNumbers = (text: string): string[] => {
+        // 匹配 ModelNumber: 或 Model Number: 两种格式
+        const pattern = /Model\s*Number:\s*([^]*?)(?=\n\s*[A-Z][a-z]+:|$)/i;
+        const match = text.match(pattern);
+        console.log('Extracting Model Numbers with pattern:', pattern, 'Result:', match ? match[1].trim() : null);
+        
+        if (!match || !match[1].trim()) {
+          return []; // 如果没有匹配或内容为空，返回空数组
+        }
+        
+        const modelNumbersText = match[1].trim();
+        // 按逗号分割，然后清理每个型号
+        const modelNumbers = modelNumbersText
+          .split(',')
+          .map(model => model.trim())
+          .filter(model => model.length > 0); // 过滤掉空字符串
+        
+        console.log('Parsed model numbers:', modelNumbers);
+        return modelNumbers;
+      };
+      
       // 定义提取规则
       const documentNumber = extractField(/No\.:?\s*(.*?)(?:\n|$)/i, content);
       const applicant = extractField(/Applicant:\s*(.*?)(?:\n|$)/i, content);
       const applicantAddress = extractField(/Address:\s*(.*?)(?:\n|$)/i, content);
+      const productModel = extractField(/Address:\s*(.*?)(?:\n|$)/i, content);
       const product = extractField(/Product:\s*(.*?)(?:\n|$)/i, content);
       const dateMatch = extractField(/Date:\s*(.*?)(?:\n|$)/i, content);
+      const testStandard = extractField(/Tested according to:\s*(.*?)(?:\n|$)/i, content);
       
+      // 解析 Model Numbers
+      const modelNumbers = extractModelNumbers(content);
+
+
       // 改进的日期解析逻辑
       let documentDate = null;
       if (dateMatch) {
@@ -84,6 +112,7 @@ export default () => ({
         applicantAddress,
         product,
         documentDate,
+        modelNumbers,
         rawContent: content
       };
       
