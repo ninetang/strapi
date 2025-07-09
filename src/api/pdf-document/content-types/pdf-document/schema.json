@@ -38,6 +38,10 @@
       "type": "date",
       "required": false
     },
+    "modelNumbers": {
+      "type": "json",
+      "required": false
+    },
     "rawContent": {
       "type": "text",
       "required": false,
