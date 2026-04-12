@@ -24,3 +24,19 @@
 - [ ] 配置权限
 - [ ] 自定义管理面板
 - [ ] API 开发和测试 
+
+
+## 文档
+
+- [部署文档](./docs/deployment.md) - 腾讯云服务器部署配置和运维指南
+
+## 投产信息
+
+- **生产环境**: 腾讯云 CVM (jootang.cn)
+- **CMS 管理后台**: http://belling-cms.jootang.cn
+- **前端展示站**: http://belling.jootang.cn:8000
+- **数据库**: SQLite (本地文件数据库)
+- **进程管理**: PM2
+- **Web 服务器**: Nginx
+
+详细信息请参考 [部署文档](./docs/deployment.md)。
