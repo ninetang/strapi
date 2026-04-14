@@ -1,6 +1,329 @@
 import type { StrapiApp } from '@strapi/strapi/admin';
+import React, { useEffect, useState, useRef } from 'react';
+
+// 导入 Strapi 5 的钩子和类型
+// @ts-ignore
+import { unstable_useContentManagerContext as useContentManagerContext } from '@strapi/strapi/admin';
+// @ts-ignore
+import { useFetchClient } from '@strapi/strapi/admin';
+
+/**
+ * 简单的测试组件，用于验证注入是否工作
+ */
+const SimpleTestComponent = () => {
+  console.log('🎯 SimpleTestComponent 已渲染！');
+
+  return (
+    <div style={{
+      padding: '12px',
+      backgroundColor: '#fef3c7',
+      border: '2px solid #f59e0b',
+      borderRadius: '4px',
+      margin: '12px 0',
+      fontWeight: 'bold',
+      color: '#92400e'
+    }}>
+      🎯 组件注入测试成功！如果你看到这个，说明注入功能工作正常。
+    </div>
+  );
+};
+
+/**
+ * PDF 信息展示面板组件
+ * 在编辑页面右侧展示解析出的 PDF 信息
+ */
+const PDFInfoPanel = () => {
+  console.log('🔍 PDFInfoPanel 组件已渲染');
+  const context = useContentManagerContext();
+
+  console.log('📊 Context:', context);
+
+  // 只在 pdf-document 内容类型中显示
+  if (!context || context.slug !== 'api::pdf-document.pdf-document') {
+    console.log('❌ 不是 PDF 文档类型，跳过渲染');
+    return null;
+  }
+
+  console.log('✅ 是 PDF 文档类型，准备渲染面板');
+
+  const { form } = context as any;
+  const { values } = form as any;
+
+  // 如果没有文档信息，不显示面板
+  if (!values || !values.documentFile) {
+    return null;
+  }
+
+  const hasData = values.documentNumber || values.applicant || values.product || values.modelNumbers;
+
+  if (!hasData) {
+    return (
+      <div style={{
+        padding: '16px',
+        backgroundColor: '#f6f6f9',
+        borderRadius: '4px',
+        marginBottom: '16px'
+      }}>
+        <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: 600 }}>
+          📄 PDF 文档信息
+        </h4>
+        <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+          选择 PDF 文件后将自动解析并显示文档信息
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      padding: '16px',
+      backgroundColor: '#f6f6f9',
+      borderRadius: '4px',
+      marginBottom: '16px'
+    }}>
+      <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: 600 }}>
+        📄 PDF 文档信息
+      </h4>
+
+      {values.documentNumber && (
+        <div style={{ marginBottom: '8px' }}>
+          <strong style={{ fontSize: '12px', color: '#32324d' }}>文档编号:</strong>{' '}
+          <span style={{ fontSize: '12px', color: '#666' }}>{values.documentNumber}</span>
+        </div>
+      )}
+
+      {values.applicant && (
+        <div style={{ marginBottom: '8px' }}>
+          <strong style={{ fontSize: '12px', color: '#32324d' }}>申请人:</strong>{' '}
+          <span style={{ fontSize: '12px', color: '#666' }}>{values.applicant}</span>
+        </div>
+      )}
+
+      {values.product && (
+        <div style={{ marginBottom: '8px' }}>
+          <strong style={{ fontSize: '12px', color: '#32324d' }}>产品:</strong>{' '}
+          <span style={{ fontSize: '12px', color: '#666' }}>{values.product}</span>
+        </div>
+      )}
+
+      {values.documentDate && (
+        <div style={{ marginBottom: '8px' }}>
+          <strong style={{ fontSize: '12px', color: '#32324d' }}>日期:</strong>{' '}
+          <span style={{ fontSize: '12px', color: '#666' }}>{values.documentDate}</span>
+        </div>
+      )}
+
+      {values.modelNumbers && values.modelNumbers.length > 0 && (
+        <div style={{ marginBottom: '8px' }}>
+          <strong style={{ fontSize: '12px', color: '#32324d', display: 'block', marginBottom: '4px' }}>
+            型号列表 ({values.modelNumbers.length}):
+          </strong>
+          <ul style={{
+            margin: '0',
+            paddingLeft: '20px',
+            fontSize: '12px',
+            color: '#666'
+          }}>
+            {values.modelNumbers.slice(0, 10).map((model: any, idx: number) => (
+              <li key={idx}>{model}</li>
+            ))}
+            {values.modelNumbers.length > 10 && (
+              <li style={{ color: '#999' }}>... 还有 {values.modelNumbers.length - 10} 个型号</li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      <div style={{
+        marginTop: '12px',
+        paddingTop: '12px',
+        borderTop: '1px solid #ddd',
+        fontSize: '11px',
+        color: '#999'
+      }}>
+        💡 提示：此信息由 PDF 自动解析生成，您可以在表单中修改
+      </div>
+    </div>
+  );
+};
+
+/**
+ * PDF 自动解析监听组件
+ * 当用户选择 PDF 文件时，自动调用解析 API 并填充表单
+ */
+const PDFAutoParseWatcher = () => {
+  console.log('🔍 PDFAutoParseWatcher 组件已渲染');
+  const context = useContentManagerContext();
+  const { post } = useFetchClient();
+  const [isParsing, setIsParsing] = useState(false);
+  const previousFileRef = useRef(null);
+  const parsedFilesRef = useRef<Set<number>>(new Set()); // 记录已解析的文件 ID
+
+  console.log('📊 Watcher Context:', context);
+
+  // 只在 pdf-document 内容类型中运行
+  if (!context || context.slug !== 'api::pdf-document.pdf-document') {
+    console.log('❌ Watcher: 不是 PDF 文档类型，跳过');
+    return null;
+  }
+
+  console.log('✅ Watcher: 是 PDF 文档类型');
+
+  const { form, id: documentId } = context as any;
+  const { values, onChange } = form as any;
+
+  // 添加渲染时的日志
+  console.log('🔍 组件重新渲染，values:', values);
+  console.log('🔍 documentFile:', values?.documentFile);
+
+  useEffect(() => {
+    console.log('🔄 useEffect 触发！');
+    console.log('🔄 完整 values:', values);
+    console.log('🔄 values.documentFile:', values?.documentFile);
+
+    const currentFile = values?.documentFile;
+    const previousFile = previousFileRef.current;
+
+    console.log('🔍 currentFile:', currentFile);
+    console.log('🔍 previousFile:', previousFile);
+    console.log('🔍 currentFile?.id:', (currentFile as any)?.id);
+    console.log('🔍 previousFile?.id:', (previousFile as any)?.id);
+
+    // 检查文件是否变化
+    const fileChanged = !!currentFile &&
+                       (!previousFile || (currentFile as any).id !== (previousFile as any)?.id);
+
+    // 检查解析字段是否为空
+    const fieldsEmpty = !values?.documentNumber && !values?.applicant && !values?.product;
+
+    // 检查是否需要解析：文件存在 且（文件变化 或 解析字段为空）
+    const needsParsing = !!currentFile && (fileChanged || fieldsEmpty);
+
+    console.log('🔍 fileChanged:', fileChanged);
+    console.log('🔍 fieldsEmpty:', fieldsEmpty);
+    console.log('🔍 needsParsing 最终判断:', needsParsing);
+
+    const currentFileId = (currentFile as any)?.id;
+
+    // 如果文件变化了，清除已解析标记，允许重新解析
+    if (fileChanged && currentFileId) {
+      console.log('🔄 文件已变化，清除已解析标记');
+      parsedFilesRef.current.delete(currentFileId);
+    }
+
+    const alreadyParsed = currentFileId && parsedFilesRef.current.has(currentFileId);
+
+    console.log('🔍 已解析的文件:', Array.from(parsedFilesRef.current));
+    console.log('🔍 当前文件已解析过:', alreadyParsed);
+
+    if (needsParsing && !isParsing && !alreadyParsed) {
+      console.log('📄 PDF 文件已选择，开始自动解析...', currentFile);
+      setIsParsing(true);
+
+      // 标记此文件为已解析（防止重复）
+      if (currentFileId) {
+        parsedFilesRef.current.add(currentFileId);
+      }
+
+      // 调用解析预览 API
+      console.log('📡 发送请求，fileId:', (currentFile as any).id);
+      post('/api/pdf-documents/parse-preview', {
+        fileId: (currentFile as any).id
+      })
+        .then((response) => {
+          console.log('✅ PDF 解析成功:', response.data);
+
+          const parsedData = response.data?.data || {};
+
+          // 记录哪些字段已被自动填充（用于后续智能合并）
+          const autoFilledFields: string[] = [];
+
+          // 只填充空字段，不覆盖用户已填写的内容
+          const updates: any = {};
+          Object.keys(parsedData).forEach(key => {
+            if ((parsedData as any)[key] && !(values as any)[key]) {
+              (updates as any)[key] = (parsedData as any)[key];
+              autoFilledFields.push(key);
+            }
+          });
+
+          if (Object.keys(updates).length > 0) {
+            // 合并更新到表单
+            Object.keys(updates).forEach(key => {
+              onChange({
+                target: {
+                  name: key,
+                  value: updates[key],
+                  type: typeof updates[key] === 'object' ? 'json' : 'text'
+                }
+              });
+            });
+
+            // 存储自动填充的字段列表到 localStorage
+            const storageKey = `pdf-auto-filled-${documentId || 'new'}`;
+            localStorage.setItem(storageKey, JSON.stringify(autoFilledFields));
+
+            console.log('📝 已自动填充字段:', autoFilledFields);
+          }
+        })
+        .catch((error) => {
+          console.error('❌ PDF 解析失败:', error);
+        })
+        .finally(() => {
+          setIsParsing(false);
+        });
+
+      // 更新引用（只在解析成功后更新）
+      previousFileRef.current = currentFile;
+    } else {
+      console.log('⏭️ 跳过解析：needsParsing=', needsParsing, ', isParsing=', isParsing, ', alreadyParsed=', alreadyParsed);
+
+      // 即使跳过解析，也要更新 previousFileRef，避免下次误判
+      if (currentFile && !isParsing) {
+        previousFileRef.current = currentFile;
+      }
+    }
+  }, [values, isParsing, post, onChange, documentId]); // 改为监听整个 values 对象
+
+  return null; // 隐藏组件，仅执行监听逻辑
+};
 
 export default {
+  register(app: StrapiApp) {
+    console.log('🔧 Register 阶段开始...');
+
+    try {
+      const contentManager = app.getPlugin('content-manager');
+      console.log('📦 Content Manager in register:', contentManager);
+
+      if (contentManager) {
+        // 注入 PDF 自动解析监听组件
+        try {
+          contentManager.injectComponent('editView', 'right-links', {
+            name: 'pdf-auto-parser-watcher',
+            Component: PDFAutoParseWatcher, // 使用完整的监听组件
+          });
+          console.log('✅ PDF 自动解析监听组件注入成功');
+        } catch (error) {
+          console.error('❌ 监听组件注入失败:', error);
+        }
+
+        // 注入 PDF 信息展示组件（可选）
+        try {
+          contentManager.injectComponent('editView', 'right-links', {
+            name: 'pdf-info-display',
+            Component: PDFInfoPanel, // 信息展示面板
+          });
+          console.log('✅ PDF 信息面板注入成功');
+        } catch (error) {
+          console.error('❌ 信息面板注入失败:', error);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Register 阶段失败:', error);
+    }
+  },
+
   config: {
     // 设置页面标题
     head: {
@@ -158,8 +481,14 @@ export default {
     if (localStorage.getItem('strapi-admin-language') === null) {
       localStorage.setItem('strapi-admin-language', 'zh-Hans');
     }
-    
+
     // 动态设置页面标题
     document.title = 'JooTang Admin';
+
+    console.log('🔧 Bootstrap 阶段开始...');
+
+    // 暂时注释掉有问题的 addEditViewSidePanel
+    // 先确保页面能正常打开
+    console.log('✅ Bootstrap 完成（API 方式暂时禁用）');
   },
 }; 
