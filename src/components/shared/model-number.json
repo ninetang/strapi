@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_shared_model_numbers",
+  "info": {
+    "displayName": "Model Number",
+    "icon": "hashtag"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

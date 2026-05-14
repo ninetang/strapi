@@ -468,7 +468,16 @@ export default {
         "Settings.application.strapiVersion.upgrade.bugfix": "有错误修复更新可用",
         "Settings.application.strapiVersion.upgrade.major": "有主要版本更新可用",
         "Settings.application.strapiVersion.upgrade.minor": "有次要版本更新可用",
-        "Settings.application.strapiVersion.upgrade.patch": "有补丁更新可用"
+        "Settings.application.strapiVersion.upgrade.patch": "有补丁更新可用",
+        // 可重复组件
+        "containers.EditView.add.new-entry": "添加条目",
+        "components.empty-repeatable": "暂无条目，点击添加。",
+        "components.DragHandle-label": "拖拽",
+        "components.DynamicZone.add-component": "向 {componentName} 添加组件",
+        "components.DynamicZone.delete-label": "删除 {name}",
+        "components.DynamicZone.move-down-label": "下移",
+        "components.DynamicZone.move-up-label": "上移",
+        "components.repeatable.reorder.error": "重新排序时出错，请重试"
       },
     },
     // 设置可用的语言

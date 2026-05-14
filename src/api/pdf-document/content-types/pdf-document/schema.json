@@ -39,13 +39,13 @@
       "required": false
     },
     "modelNumbers": {
-      "type": "json",
-      "required": false
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.model-number"
     },
     "rawContent": {
       "type": "text",
       "required": false,
       "private": true
     }
-  }
-} 
+  }}

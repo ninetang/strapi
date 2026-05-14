@@ -45,24 +45,24 @@ export default () => ({
         return match ? match[1].trim() : null;
       };
       
-      // 解析 Model Number 字段，返回字符串数组
-      const extractModelNumbers = (text: string): string[] => {
+      // 解析 Model Number 字段，返回组件格式数组
+      const extractModelNumbers = (text: string): { value: string }[] => {
         // 匹配 ModelNumber: 或 Model Number: 两种格式
         const pattern = /Model\s*Number:\s*([^]*?)(?=\n\s*[A-Z][a-z]+:|$)/i;
         const match = text.match(pattern);
         console.log('Extracting Model Numbers with pattern:', pattern, 'Result:', match ? match[1].trim() : null);
-        
+
         if (!match || !match[1].trim()) {
-          return []; // 如果没有匹配或内容为空，返回空数组
+          return [];
         }
-        
+
         const modelNumbersText = match[1].trim();
-        // 按逗号分割，然后清理每个型号
         const modelNumbers = modelNumbersText
           .split(',')
           .map(model => model.trim())
-          .filter(model => model.length > 0); // 过滤掉空字符串
-        
+          .filter(model => model.length > 0)
+          .map(model => ({ value: model }));
+
         console.log('Parsed model numbers:', modelNumbers);
         return modelNumbers;
       };

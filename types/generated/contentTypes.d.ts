@@ -561,7 +561,7 @@ export interface ApiPdfDocumentPdfDocument extends Struct.CollectionTypeSchema {
       'api::pdf-document.pdf-document'
     > &
       Schema.Attribute.Private;
-    modelNumbers: Schema.Attribute.JSON;
+    modelNumbers: Schema.Attribute.Component<'shared.model-number', true>;
     product: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     rawContent: Schema.Attribute.Text & Schema.Attribute.Private;
